@@ -3,6 +3,8 @@
 // Usage: node tools/make_report.js
 const fs = require("fs");
 const path = require("path");
+// jszip ships with docx; resolve it next to the docx package
+const JSZip = require(require.resolve("jszip", { paths: [path.dirname(require.resolve("docx"))] }));
 const {
   AlignmentType, BorderStyle, Document, Footer, Header, HeadingLevel, ImageRun,
   LevelFormat, PageBreak, PageNumber, Packer, Paragraph, ShadingType, Table,
@@ -108,9 +110,11 @@ function codeBlock(source, { numbers = true, plain = false, size = 16, keepToget
       spacing: { before: 0, after: 0, line: 228 },
       shading: { type: ShadingType.CLEAR, color: "auto", fill: "F6F8FA" },
       border: {
-        left: border, right: border,
+        // schema order: top, left, bottom, right
         ...(i === 0 ? { top: border } : {}),
+        left: border,
         ...(i === lines.length - 1 ? { bottom: border } : {}),
+        right: border,
       },
       indent: { left: 80, right: 80 },
       keepLines: true,
@@ -352,6 +356,7 @@ const intro = [
   bullet("Linker: JWlink, linking each program with `Irvine32.lib`, `Kernel32.lib` and `User32.lib` into a 32-bit Windows console program (`.exe`)."),
   bullet("Run: each `.exe` was started from `cmd.exe` in a Win32 console window (using Wine), and the screenshots show that window."),
   bullet("The same `.asm` files build in Visual Studio with the usual Irvine32 project: add the file to the project and press Ctrl+F5."),
+  bullet("The address printed by `DumpMem` (for example `Dump of offset 00404000`) depends on the linker, so it will be different in a Visual Studio build. The bytes it shows are the same."),
 ];
 
 // ------------------------------------------------------------- document
@@ -403,7 +408,28 @@ const doc = new Document({
 });
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
-Packer.toBuffer(doc).then((buf) => {
-  fs.writeFileSync(OUT, buf);
-  console.log("wrote", OUT);
-});
+// docx-js writes paragraph borders as top, bottom, left, right; the schema
+// wants top, left, bottom, right, so put them back in that order.
+function fixBorderOrder(xml) {
+  const order = ["top", "left", "bottom", "right", "between", "bar"];
+  return xml.replace(/<w:pBdr>(.*?)<\/w:pBdr>/g, (all, inner) => {
+    const parts = inner.match(/<w:\w+ [^>]*\/>/g) || [];
+    const name = (p) => p.match(/^<w:(\w+)/)[1];
+    parts.sort((a, b) => order.indexOf(name(a)) - order.indexOf(name(b)));
+    return `<w:pBdr>${parts.join("")}</w:pBdr>`;
+  });
+}
+
+Packer.toBuffer(doc)
+  .then((buf) => JSZip.loadAsync(buf))
+  .then(async (zip) => {
+    for (const part of ["word/document.xml", "word/styles.xml"]) {
+      const f = zip.file(part);
+      if (f) zip.file(part, fixBorderOrder(await f.async("string")));
+    }
+    return zip.generateAsync({ type: "nodebuffer", compression: "DEFLATE" });
+  })
+  .then((buf) => {
+    fs.writeFileSync(OUT, buf);
+    console.log("wrote", OUT);
+  });
