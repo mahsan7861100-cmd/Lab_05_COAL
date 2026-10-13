@@ -1,0 +1,24 @@
+Lab 05 - Home Task 1 : Defining Data in Assembly
+Muhammad Ahsan  |  FA24-BCS-059  |  COAL
+-------------------------------------------------
+Variable  Type    Hex          Decimal
+--------  ------  -----------  ----------------
+Sort      BYTE    79h          121  ('y')
+value     WORD    6247h        25159
+total     DWORD   205A864Fh    542803535
+marks     DWORD   8 elements   0 0 0 0 0 0 0 0
+                               LENGTHOF = 8, SIZEOF = 32 bytes
+value1    BYTE    41h          65  ('A')
+value2    BYTE    00h          0
+value3    BYTE    FFh          255
+value4    SBYTE   80h          -128
+value5    SBYTE   7Fh          +127
+value6    BYTE    00h          0  (uninitialized ?)
+
+Memory dump of all the variables above (45 bytes, little-endian):
+
+Dump of offset 00404000
+-------------------------------
+79 47 62 4F 86 5A 20 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 41 00 FF 80 7F 00

@@ -1,0 +1,18 @@
+Lab 05 - Home Task 4 : C++ declarations in Assembly
+Muhammad Ahsan  |  FA24-BCS-059  |  COAL
+------------------------------------------------------------------------------
+   C++ declaration         Assembly             Hex        Value
+   ----------------------  -------------------  ---------  -----------------
+1) char initial;           initial BYTE   ?     00h        0  (uninitialized)
+2) char grade = 'B';       grade   BYTE   'B'   42h        'B'  (ASCII 66)
+3) char x = 'P', y = 'Q';  x       BYTE   'P'   50h        'P'  (ASCII 80)
+                           y       BYTE   'Q'   51h        'Q'  (ASCII 81)
+4) int amount;             amount  SDWORD ?     00000000h  +0  (uninitialized)
+5) int count = 0;          count   SDWORD 0     00000000h  +0
+6) int number = -396;      number  SDWORD -396  FFFFFE74h  -396
+
+Memory dump of the declarations (16 bytes, little-endian):
+
+Dump of offset 00404000
+-------------------------------
+00 42 50 51 00 00 00 00 00 00 00 00 74 FE FF FF

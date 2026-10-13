@@ -1,0 +1,12 @@
+Lab 05 - Home Task 2 : Menu declared as a string
+Muhammad Ahsan  |  FA24-BCS-059  |  COAL
+-------------------------------------------------
+
+Checking Account
+1) Create a new account.
+2) Open an existing account
+3) Credit the account
+4) Debit the account
+5) Exit
+-------------------------------------------------
+SIZEOF menu = 128 bytes (characters + CR/LF pairs + null terminator)

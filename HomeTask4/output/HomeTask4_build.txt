@@ -1,0 +1,2 @@
+/home/user/Lab_05_COAL/HomeTask4/HomeTask4.asm: 200 lines, 2 passes, 1 ms, 0 warnings, 0 errors
+Linked HomeTask4.exe (10752 bytes)

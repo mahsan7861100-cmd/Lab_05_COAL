@@ -1,0 +1,2 @@
+/home/user/Lab_05_COAL/HomeTask2/HomeTask2.asm: 67 lines, 2 passes, 0 ms, 0 warnings, 0 errors
+Linked HomeTask2.exe (9216 bytes)
